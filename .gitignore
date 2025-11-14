@@ -19,17 +19,15 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-MANIFEST
 
 # Virtual environments
 venv/
 env/
 ENV/
-groundeep/
 
 # Jupyter Notebook
 .ipynb_checkpoints
-*.ipynb
+*.ipynb_checkpoints/
 
 # PyCharm
 .idea/
@@ -37,31 +35,28 @@ groundeep/
 # VSCode
 .vscode/
 
-# Weights & Biases
-wandb/
+# MacOS
+.DS_Store
 
-# Model checkpoints
-networks/
-*.pkl
+# Logs and databases
+*.log
+*.sqlite
+
+# Model checkpoints (large files)
 *.pth
 *.pt
+*.ckpt
+networks/
 
-# Logs
-logs/
+# W&B
+wandb/
 logs-idbn/
-*.log
 
-# Data
-data/
-datasets/
-*.npz
-*.npy
-
-# OS
-.DS_Store
-Thumbs.db
+# Old/backup files
+*_old.py
+*_backup.py
 
 # Temporary files
 *.tmp
-*.swp
-*~
+*.bak
+~*

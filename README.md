@@ -1,5 +1,8 @@
 # Groundeep Unimodal Training
 
+[![Open Lab 1 in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/francesco-cal98/dbn-training/blob/main/cc_lab_01.ipynb)
+[![Open Lab 2 in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/francesco-cal98/dbn-training/blob/main/cc_lab_02.ipynb)
+
 Minimal and clean repository for training **iDBN (independent Deep Belief Networks)** on unimodal visual data.
 
 ## Features
@@ -13,6 +16,7 @@ Minimal and clean repository for training **iDBN (independent Deep Belief Networ
   - Linear probe analysis
 - ✅ Support for uniform and Zipfian-distributed datasets
 - ✅ Configurable via YAML
+- ✅ Educational notebooks (cc_lab_01, cc_lab_02) with wrapper API for easy teaching
 
 ## Installation
 
@@ -106,9 +110,15 @@ groundeep-unimodal-training/
 │   │   └── training_config.yaml   # Main configuration
 │   └── main_scripts/
 │       └── train.py               # Training entrypoint
+├── DBN.py                          # Wrapper for educational notebooks
+├── RBM.py                          # Wrapper for educational notebooks
+├── cc_lab_01.ipynb                 # Lab 1: DBN training on MNIST
+├── cc_lab_02.ipynb                 # Lab 2: Additional experiments
+├── test_wrappers.py                # Test suite for wrapper classes
 ├── tests/                          # Unit tests (TODO)
 ├── requirements.txt
 ├── setup.py
+├── WRAPPER_INFO.md                 # Documentation for wrapper classes
 └── README.md
 ```
 
@@ -149,6 +159,54 @@ The training automatically logs to [Weights & Biases](https://wandb.ai):
 | `batch_size` | Batch size | 128 |
 | `sparsity` | Enable sparsity regularization | false |
 | `dataset_distribution` | 'uniform' or 'zipfian' | 'uniform' |
+
+## Educational Notebooks
+
+This repository includes Jupyter notebooks for teaching DBN concepts:
+
+- **[cc_lab_01.ipynb](cc_lab_01.ipynb)** [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/francesco-cal98/dbn-training/blob/main/cc_lab_01.ipynb)
+  - Introduction to DBN training on MNIST
+  - Iterative training visualization
+  - Weight visualization
+  - Linear read-out experiments
+  - Robustness to noise analysis
+
+- **[cc_lab_02.ipynb](cc_lab_02.ipynb)** [![Open in Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/francesco-cal98/dbn-training/blob/main/cc_lab_02.ipynb)
+  - Advanced experiments
+
+### Using the Labs
+
+**Option 1: Google Colab (Recommended for Students)**
+
+Click the badge above or go to the notebook and click "Open in Colab". The notebook will automatically:
+1. Clone this repository
+2. Install dependencies
+3. Set up the environment
+
+No local installation needed!
+
+**Option 2: Local Installation**
+
+```bash
+git clone https://github.com/francesco-cal98/dbn-training.git
+cd dbn-training
+pip install -r requirements.txt
+jupyter notebook cc_lab_01.ipynb
+```
+
+### Notebook API
+
+The notebooks use wrapper classes ([DBN.py](DBN.py), [RBM.py](RBM.py)) that provide a simple, clean API:
+
+```python
+# In the notebooks - simple API for students
+from DBN import DBN
+
+dbn = DBN(visible_units=784, hidden_units=[400, 500, 800], k=1, learning_rate=0.1)
+dbn.train_static(train_data, train_labels, num_epochs=50, batch_size=125)
+```
+
+For more details on the implementation, see [WRAPPER_INFO.md](WRAPPER_INFO.md) and [IMPLEMENTATION_NOTES.md](IMPLEMENTATION_NOTES.md).
 
 ## Workflow: Develop locally, push to separate repo
 
