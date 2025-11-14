@@ -157,16 +157,18 @@ class DBN:
                 # Iterative update: propagate through layers and update each
                 v = batch_data
                 for layer_idx, rbm in enumerate(self.rbm_layers):
-                    # Forward through this layer
-                    with torch.no_grad():
-                        h_prob = rbm.forward(v)
-
                     # Update this layer with CD-k
                     loss = rbm.contrastive_divergence(v, k=self.k)
                     epoch_losses[layer_idx].append(loss)
 
-                    # Use output as input to next layer
-                    v = h_prob.detach()
+                    # Forward for next layer (no grad needed)
+                    with torch.no_grad():
+                        h_prob = rbm.forward(v)
+                        v = h_prob
+
+                # Free GPU memory after each batch
+                if self.device.type == 'cuda':
+                    torch.cuda.empty_cache()
 
             # Print progress
             if epoch % 10 == 0 or epoch == num_epochs - 1:

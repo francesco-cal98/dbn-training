@@ -123,6 +123,7 @@ class RBM(nn.Module):
         h_prob, _ = self.sample_hidden(v)
         return h_prob
 
+    @torch.no_grad()
     def contrastive_divergence(self, v_data, k=1):
         """
         Perform one step of Contrastive Divergence.
@@ -146,7 +147,7 @@ class RBM(nn.Module):
         h_prob_pos, h_sample_pos = self.sample_hidden(v_data)
 
         # Negative phase (k steps of Gibbs sampling)
-        v_neg = v_data
+        v_neg = v_data.clone()
         for _ in range(k):
             h_prob_neg, h_sample_neg = self.sample_hidden(v_neg)
             v_prob_neg, v_neg = self.sample_visible(h_sample_neg)
@@ -158,23 +159,23 @@ class RBM(nn.Module):
         positive_grad = (v_data.T @ h_prob_pos) / batch_size
         negative_grad = (v_neg.T @ h_prob_neg) / batch_size
 
-        dW = positive_grad - negative_grad - self.weight_decay * self.W
+        dW = positive_grad - negative_grad - self.weight_decay * self.W.data
         dv_bias = (v_data.sum(0) - v_neg.sum(0)) / batch_size
         dh_bias = (h_prob_pos.sum(0) - h_prob_neg.sum(0)) / batch_size
 
-        # Update with momentum
-        self.W_momentum = self.momentum * self.W_momentum + self.learning_rate * dW
-        self.v_bias_momentum = self.momentum * self.v_bias_momentum + self.learning_rate * dv_bias
-        self.h_bias_momentum = self.momentum * self.h_bias_momentum + self.learning_rate * dh_bias
+        # Update with momentum (in-place operations)
+        self.W_momentum.mul_(self.momentum).add_(dW, alpha=self.learning_rate)
+        self.v_bias_momentum.mul_(self.momentum).add_(dv_bias, alpha=self.learning_rate)
+        self.h_bias_momentum.mul_(self.momentum).add_(dh_bias, alpha=self.learning_rate)
 
-        self.W.data += self.W_momentum
-        self.v_bias.data += self.v_bias_momentum
-        self.h_bias.data += self.h_bias_momentum
+        self.W.data.add_(self.W_momentum)
+        self.v_bias.data.add_(self.v_bias_momentum)
+        self.h_bias.data.add_(self.h_bias_momentum)
 
         # Compute reconstruction error
-        loss = torch.mean((v_data - v_prob_neg) ** 2)
+        loss = float(torch.mean((v_data - v_prob_neg) ** 2).item())
 
-        return loss.item()
+        return loss
 
     def __repr__(self):
         return (f"RBM({self.visible_units} -> {self.hidden_units}, "
