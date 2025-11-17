@@ -24,9 +24,8 @@ if IN_COLAB:
 
     # Save the trained model
     print("💾 Saving trained DBN model...")
-    model_path = '/content/groundeep-unimodal-training/dbn_mnist.pth'
+    model_path = '/content/groundeep-unimodal-training/dbn_mnist.pkl'
     dbn_mnist.save(model_path)
-    print(f"✅ Model saved to {model_path}")
     print()
 
     # Launch Streamlit in background

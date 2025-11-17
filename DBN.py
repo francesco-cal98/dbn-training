@@ -8,6 +8,7 @@ This is a clean, minimal implementation suitable for any dataset.
 """
 
 import torch
+import pickle
 from torch.utils.data import TensorDataset, DataLoader
 from RBM import RBM
 
@@ -249,12 +250,27 @@ class DBN:
         return v_prob
 
     def save(self, filepath):
-        """Save DBN to file."""
+        """
+        Save DBN to file using pickle.
+
+        Parameters:
+        -----------
+        filepath : str
+            Path where to save the model (use .pkl extension)
+        """
+        # Prepare state dictionary
         state = {
             'visible_units': self.visible_units,
             'hidden_units': self.hidden_units,
             'k': self.k,
             'learning_rate': self.learning_rate,
+            'learning_rate_decay': self.learning_rate_decay,
+            'initial_momentum': self.initial_momentum,
+            'final_momentum': self.final_momentum,
+            'weight_decay': self.weight_decay,
+            'xavier_init': self.xavier_init,
+            'increase_to_cd_k': self.increase_to_cd_k,
+            'use_gpu': self.use_gpu,
             'rbm_states': [
                 {
                     'W': rbm.W.cpu().detach(),
@@ -264,13 +280,31 @@ class DBN:
                 for rbm in self.rbm_layers
             ]
         }
-        torch.save(state, filepath)
+
+        # Save with pickle
+        with open(filepath, 'wb') as f:
+            pickle.dump(state, f)
+
         print(f"DBN saved to {filepath}")
 
     def load(self, filepath):
-        """Load DBN from file."""
-        state = torch.load(filepath, map_location=self.device)
+        """
+        Load DBN from file (supports both pickle and torch formats).
 
+        Parameters:
+        -----------
+        filepath : str
+            Path to the saved model file (.pkl or .pth)
+        """
+        # Try to load with pickle first, fallback to torch.load for compatibility
+        try:
+            with open(filepath, 'rb') as f:
+                state = pickle.load(f)
+        except (pickle.UnpicklingError, EOFError):
+            # Fallback to torch.load for old .pth files
+            state = torch.load(filepath, map_location=self.device)
+
+        # Load RBM states
         for idx, rbm_state in enumerate(state['rbm_states']):
             self.rbm_layers[idx].W.data = rbm_state['W'].to(self.device)
             self.rbm_layers[idx].v_bias.data = rbm_state['v_bias'].to(self.device)
