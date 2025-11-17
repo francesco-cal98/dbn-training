@@ -114,11 +114,21 @@ groundeep-unimodal-training/
 ├── RBM.py                          # Wrapper for educational notebooks
 ├── cc_lab_01.ipynb                 # Lab 1: DBN training on MNIST
 ├── cc_lab_02.ipynb                 # Lab 2: Additional experiments
+├── pca_explorer.py                 # 🆕 Streamlit PCA app (local)
+├── pca_explorer_colab.py           # 🆕 Streamlit PCA app (Colab)
+├── train_and_save.py               # 🆕 Quick script to train and save DBN
+├── demo_pca_explorer.py            # 🆕 Quick demo training script
 ├── test_wrappers.py                # Test suite for wrapper classes
 ├── tests/                          # Unit tests (TODO)
 ├── requirements.txt
 ├── setup.py
 ├── WRAPPER_INFO.md                 # Documentation for wrapper classes
+├── IMPLEMENTATION_NOTES.md         # Technical implementation details
+├── COLAB_GUIDE.md                  # Guide for Google Colab usage
+├── STREAMLIT_APP.md                # 🆕 Streamlit app documentation
+├── COLAB_STREAMLIT_CELL.md         # 🆕 Streamlit on Colab guide
+├── BUGFIX_get_kth_layer_repr.md    # 🆕 Critical bug fix documentation
+├── CHANGELOG.md                    # 🆕 Project changelog
 └── README.md
 ```
 
@@ -207,6 +217,41 @@ dbn.train_static(train_data, train_labels, num_epochs=50, batch_size=125)
 ```
 
 For more details on the implementation, see [WRAPPER_INFO.md](WRAPPER_INFO.md) and [IMPLEMENTATION_NOTES.md](IMPLEMENTATION_NOTES.md).
+
+## Interactive PCA Explorer 🔍
+
+We provide a **Streamlit web app** for interactively exploring the learned representations:
+
+### Local Usage
+
+```bash
+# Train and save the model (if not already done)
+python train_and_save.py
+
+# Launch the interactive app
+streamlit run pca_explorer.py
+```
+
+### Google Colab Usage
+
+Add this cell at the end of your notebook after training:
+
+```python
+!pip install -q streamlit plotly
+dbn_mnist.save('/content/groundeep-unimodal-training/dbn_mnist.pkl')
+!streamlit run /content/groundeep-unimodal-training/pca_explorer_colab.py &>/content/logs.txt &
+!npx localtunnel --port 8501 &
+```
+
+Then click the URL that appears (e.g., `https://xxx-xxx.loca.lt`)
+
+**Features:**
+- 🎯 Interactive 2D PCA visualization with plotly
+- 🖼️ Click on points to see corresponding MNIST images
+- 📊 Compare representations across different layers
+- 📈 Real-time statistics and class distributions
+
+See [STREAMLIT_APP.md](STREAMLIT_APP.md) for local usage and [COLAB_STREAMLIT_CELL.md](COLAB_STREAMLIT_CELL.md) for Google Colab usage.
 
 ## Workflow: Develop locally, push to separate repo
 

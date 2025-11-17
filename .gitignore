@@ -46,6 +46,7 @@ ENV/
 *.pth
 *.pt
 *.ckpt
+*.pkl
 networks/
 
 # W&B
@@ -60,3 +61,9 @@ logs-idbn/
 *.tmp
 *.bak
 ~*
+
+# Streamlit
+.streamlit/
+
+# MNIST data directory
+data/
