@@ -59,8 +59,9 @@ class RBM(nn.Module):
 
         # Initialize weights and biases
         # W: (visible_units, hidden_units)
+
         self.W = nn.Parameter(
-            torch.randn(visible_units, hidden_units, device=self.device) / math.sqrt(visible_units)
+            torch.nn.init.xavier_normal_(torch.empty((visible_units, hidden_units), device='cpu')) * 0.01
         )
         self.v_bias = nn.Parameter(torch.zeros(visible_units, device=self.device))
         self.h_bias = nn.Parameter(torch.zeros(hidden_units, device=self.device))
